@@ -4,6 +4,13 @@ const app = express();
 
 app.use(express.json());
 
+
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        res.status(500).send("Something went wrong..!!!")
+    }
+})
+
 app.get("/user",(req,res,next) =>{
     console.log("Handling the route user!")
     // res.send("Response!!")
@@ -21,6 +28,7 @@ app.get("/user",(req,res,next) =>{
 // app.use("/",(req,res)=>{
 //     res.send("Hello test!!!!!!!")
 // })
+
 
 
 
