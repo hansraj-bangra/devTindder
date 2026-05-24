@@ -1,17 +1,21 @@
 const express = require("express");
-const validator = require("validator")
+const validator = require("validator");
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken");
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const {validateSignUpData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const user = require("./models/user");
+const {userAuth} = require("./middlewares/auth")
 
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser())
 
-app.patch("/user/:userId",async(req,res)=>{
+app.patch("/user/:userId",userAuth,async(req,res)=>{
     const userId =req.params.userId;
     const data = req.body;
     try {
@@ -74,13 +78,19 @@ app.post("/login",async (req,res)=>{
             throw new Error("Invalid credentials");
         }
 
+        //Create a JWT token
+        const token = await jwt.sign({_id:user._id},"Dev@Tinder$777",{expiresIn:"1d"});
+
+        //Add the token to cookie and send the response back to the user 
+        res.cookie("token",token)
+
         res.send("Login successfully!!")
     } catch (error) {
         res.status(400).send("ERROR: "+err.message)
     }
 })
 
-app.get("/user",async (req,res)=>{
+app.get("/user",userAuth,async (req,res)=>{
     const email = req.body?.emailId;
     
     try {
@@ -98,12 +108,23 @@ app.get("/user",async (req,res)=>{
     
 })
 
-app.get("/feed", async(req,res)=>{
+app.get("/feed", userAuth, async(req,res)=>{
     try {
         const users = await User.find({});
         res.send(users)
     } catch (error) {
         res.status(400).send("Something went wrong in user detail!!")
+    }
+});
+
+
+app.get("/profile",async(req,res)=>{
+
+    try {
+        const user = req.user;
+        res.send(user);
+    } catch (error) {
+        res.status(404).send("Invalid Credentials")
     }
 })
 
@@ -113,6 +134,13 @@ connectDB().then(()=>{
 }).catch(err =>{
     console.error("Database connection failed!!!")
 })
+
+
+
+
+
+
+
 
 
 // app.use("/",(err,req,res,next)=>{
