@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = mongoose.Schema({
     firstName:{
@@ -14,11 +15,21 @@ const userSchema = mongoose.Schema({
         type:String,
         require:true,
         unique:true,
-        trim:true
+        trim:true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid Email address: " + value);
+            }
+        }
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter a Strong password: " + value);
+            }
+        }
     },
     age:{
         type:Number,
@@ -35,7 +46,12 @@ const userSchema = mongoose.Schema({
     },
     photoUrl:{
         type:String,
-        default:"https://media.istockphoto.com/id/1327592506/vector/default-avatar-photo-placeholder-icon-grey-profile-picture-business-man.jpg?s=1024x1024&w=is&k=20&c=er-yFBCv5wYO_curZ-MILgW0ECSjt0DDg5OlwpsAgZM="
+        default:"https://media.istockphoto.com/id/1327592506/vector/default-avatar-photo-placeholder-icon-grey-profile-picture-business-man.jpg?s=1024x1024&w=is&k=20&c=er-yFBCv5wYO_curZ-MILgW0ECSjt0DDg5OlwpsAgZM=",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid photo URL: " + value);
+            }
+        }
     },
     about:{
         type:String,
