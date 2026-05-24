@@ -2,24 +2,46 @@ const mongoose = require("mongoose")
 
 const userSchema = mongoose.Schema({
     firstName:{
-        type:String
+        type:String,
+        required:true,
+        minLength:4,
+        maxLength:50
     },
     lastName:{
         type:String
     },
     emailId:{
-        type:String
+        type:String,
+        require:true,
+        unique:true,
+        trim:true
     },
     password:{
-        type:String
+        type:String,
+        required:true
     },
     age:{
-        type:Number
+        type:Number,
+        min:18
+        
     },
     gender:{
-        type:String
+        type:String,
+        validate(value){
+            if(!["male","female","others"].includes(value)){
+                throw new Error("Gender data is not valid!!")
+            }
+        }
+    },
+    photoUrl:{
+        type:String,
+        default:"https://media.istockphoto.com/id/1327592506/vector/default-avatar-photo-placeholder-icon-grey-profile-picture-business-man.jpg?s=1024x1024&w=is&k=20&c=er-yFBCv5wYO_curZ-MILgW0ECSjt0DDg5OlwpsAgZM="
+    },
+    about:{
+        type:String,
+        default:"This is a default about of the user!"
     }
-});
+},{timestamp:true});
 
 
 module.exports = mongoose.model("User",userSchema);
