@@ -1,9 +1,11 @@
 const express = require("express");
+const validator = require("validator")
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const {validateSignUpData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const user = require("./models/user");
+
 
 const app = express();
 
@@ -79,9 +81,13 @@ app.post("/login",async (req,res)=>{
 })
 
 app.get("/user",async (req,res)=>{
-    const email = req.boby.emailId;
-    const user = await User.findOne({emailId:emailId});
+    const email = req.body?.emailId;
+    
     try {
+        if(!validator.isEmail(email)){
+            throw new Error("Invalid Email address!!")
+        }
+        const user = await User.findOne({emailId:email});
         if(!user){
             res.status(400).send("Something went wrong in user detail!!")
         }
