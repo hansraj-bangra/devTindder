@@ -1,21 +1,19 @@
 
 const validator = require("validator")
-const validateSignUpData =(req) =>{
-    const {firstName,lastName,emailId,password} = req.body;
+
+const validateSignUpData = async (body) =>{
+    
+    const {firstName,lastName,emailId,password} = body;
+
+    console.log(firstName.length)
 
     if(!firstName && !lastName){
         throw new Error("Name is not valid!!")
-    }
-
-    else if(firstName.length >4){
+    }else if(firstName.length < 4){
         throw new Error("First should be more than 4 char")
-    }
-
-    else if(!validator.isEmail(emailId)){
+    }else if(!validator.isEmail(emailId)){
         throw new Error("Email is not valid")
-    }
-
-    else if(!validator.isStrongPassword(password)){
+    }else if(!validator.isStrongPassword(password)){
         throw new Error("Please enter a strong password!!")
     }
 
